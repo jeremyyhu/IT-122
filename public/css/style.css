@@ -1,0 +1,36 @@
+body {
+    background-color: floralwhite;
+    font-family: "Poppins", sans-serif;
+}
+
+h1 {
+    color:blanchedalmond;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 720%;
+    text-align: center;
+}
+
+hr {
+    margin: 20px;
+}
+
+img {
+    border-radius: 1%;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.detail {
+    color:blanchedalmond;
+    font-size: 72px;
+}
+
+#home {
+    width: 100%;
+    text-align: center;
+}
