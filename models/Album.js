@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
-import { connectionString } from '../credentials.js';
+import { connectionString } from '../secrets.js';
 
 mongoose.connect(connectionString, { dbName: 'sccprojects' });
 
