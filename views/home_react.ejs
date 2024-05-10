@@ -20,23 +20,69 @@
     <div id="root"></div>
     <script type="text/babel">
 
-        const items =  <%- items %>;
-
         // define other components
-        const albums = items.map(item => {
+        const Albums = (props) => {
+            return props.data.map(item => {
+                return (
+                    <div class="item">
+                        <div onClick={props.clickHandler}>{item.title}</div>
+                    </div>
+                );
+            });
+        }
+
+        const InputForm = (props) => {
             return (
-                <div class="item">
-                    <a href={`/detail?title=${item.title}`}>{item.title}</a>
+                <div class="formContainer">
+                    <form>
+                        Title: <input type="text" name="title" value={props.item.title || ""} onChange={props.changeHandler}/><br/>
+                        Author: <input type="text" name="artist" value={props.item.artist || ""} onChange={props.changeHandler} /><br />
+                        Genre: <input type="text" name="genre" value={props.item.genre || ""} onChange={props.changeHandler} /><br />
+                        Year: <input type="text" name="year" value={props.item.year || ""} onChange={props.changeHandler} /><br />
+                    </form>
+                    <button name="clear" onClick={props.clear} type="button">Clear</button>
                 </div>
-            );
-        });
+            )
+        }
 
         const App = () => {
+            const [items, setItems] = React.useState(<%- albums %>);
+            const [currentItem, setCurrentItem] = React.useState({});
+
+            const selectItem = (event) => {
+                const item = items.find(item => {
+                    return item.title === event.target.innerText;
+                });
+                setCurrentItem(item);
+            }
+
+            const clear = () => {
+                setCurrentItem({});
+            }
+
+            const changeHandler = (event) => {
+                const newItem = { ...currentItem };
+                newItem[event.target.name] = event.target.value;
+                setCurrentItem(newItem);
+                items.find((item, index) => {
+                    if (item._id === newItem._id) {
+                        items[index] = newItem;
+                        setItems(items);
+                    }
+                })
+            }
+
             return (
                 <div>
                     <Header/>
+                    <InputForm
+                        item={currentItem}
+                        changeHandler={changeHandler}
+                        clear={clear}
+                    />
+                    <hr/>
                     <div class="container">
-                        {albums}
+                        <Albums data={items} clickHandler={selectItem}/>
                     </div>
                 </div>
             );

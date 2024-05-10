@@ -17,7 +17,7 @@ app.set('view engine', 'ejs');
 app.get('/', (req, res, next) => {
     Album.find({}).lean()
         .then((albums) => {
-            res.render('home_react', {items: JSON.stringify(albums)});
+            res.render('home_react', {albums: JSON.stringify(albums)});
         }).catch(err => next(err));
 });
 
