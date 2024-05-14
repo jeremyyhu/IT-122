@@ -17,7 +17,7 @@ app.set('view engine', 'ejs');
 app.get('/', (req, res, next) => {
     Album.find({}).lean()
         .then((albums) => {
-            res.render('home_react', {albums: JSON.stringify(albums)});
+            res.render('home_react');
         }).catch(err => next(err));
 });
 
@@ -65,7 +65,7 @@ app.get('/api/albums/:title', (req, res) => {
 });
 
 app.post('/api/add', (req, res) => {
-    Album.updateOne({ _id: req.body._id }, req.body, { upsert: true })
+    Album.updateOne({ title: req.body.title }, req.body, { upsert: true })
         .then(result => {
             res.json(result);
         }).catch(err => {

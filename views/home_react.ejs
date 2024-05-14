@@ -22,9 +22,9 @@
 
         // define other components
         const Albums = (props) => {
-            return props.data.map(item => {
+            return props.data.map((item, index) => {
                 return (
-                    <div class="item">
+                    <div key={index} className="item">
                         <div onClick={props.clickHandler}>{item.title}</div>
                     </div>
                 );
@@ -33,7 +33,7 @@
 
         const InputForm = (props) => {
             return (
-                <div class="formContainer">
+                <div className="formContainer">
                     <form>
                         Title: <input type="text" name="title" value={props.item.title || ""} onChange={props.changeHandler}/><br/>
                         Author: <input type="text" name="artist" value={props.item.artist || ""} onChange={props.changeHandler} /><br />
@@ -41,13 +41,20 @@
                         Year: <input type="text" name="year" value={props.item.year || ""} onChange={props.changeHandler} /><br />
                     </form>
                     <button name="clear" onClick={props.clear} type="button">Clear</button>
+                    <button name="save" onClick={props.save} type="button">Save</button>
+                    <button name="delete" onClick={props.delete} type="button">Delete</button>
                 </div>
             )
         }
 
         const App = () => {
-            const [items, setItems] = React.useState(<%- albums %>);
+            const [items, setItems] = React.useState([]);
             const [currentItem, setCurrentItem] = React.useState({});
+
+            React.useEffect(async () => {
+                const albums = await fetch('/api/albums').then(res => res.json());
+                setItems(albums);
+            }, [items]);
 
             const selectItem = (event) => {
                 const item = items.find(item => {
@@ -56,8 +63,37 @@
                 setCurrentItem(item);
             }
 
-            const clear = () => {
+            const clearItem = () => {
                 setCurrentItem({});
+            }
+
+            const saveItem = async () => {
+                if (!currentItem.title) {
+                    return;
+                }
+                await fetch(`/api/add`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(currentItem)
+                }).then(() => {
+                    if (!items.includes(currentItem)) {
+                        let newItems = [...items];
+                        newItems.push(currentItem);
+                        setItems(newItems);
+                    }
+                });
+            }
+
+            const deleteItem = async () => {
+                await fetch(`/api/delete/${currentItem.title}`).then(() => {
+                    const updatedItems = items.filter(item => {
+                        return item.title != currentItem.title;
+                    });
+                    setItems(updatedItems);
+                    setCurrentItem({});
+                });
             }
 
             const changeHandler = (event) => {
@@ -69,27 +105,25 @@
                         items[index] = newItem;
                         setItems(items);
                     }
-                })
+                });
             }
 
             return (
                 <div>
-                    <Header/>
+                    <h1>Albums</h1>
                     <InputForm
                         item={currentItem}
                         changeHandler={changeHandler}
-                        clear={clear}
+                        clear={clearItem}
+                        save={saveItem}
+                        delete={deleteItem}
                     />
                     <hr/>
-                    <div class="container">
+                    <div className="container">
                         <Albums data={items} clickHandler={selectItem}/>
                     </div>
                 </div>
             );
-        }
-
-        const Header = () => {
-            return <h1>Albums</h1>;
         }
 
         ReactDOM.render(<App/>, document.getElementById('root'));
