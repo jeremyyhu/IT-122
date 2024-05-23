@@ -16,7 +16,7 @@ app.set('view engine', 'ejs');
 
 app.get('/', (req, res, next) => {
     Album.find({}).lean()
-        .then((albums) => {
+        .then(() => {
             res.render('home_react');
         }).catch(err => next(err));
 });
@@ -46,7 +46,7 @@ app.get('/api/albums', (req, res) => {
     Album.find({}).lean()
         .then(albums => {
             res.json(albums);
-        }).catch(err => {
+        }).catch(() => {
             res.status(500).send('Database Error occurred');
         });
 });
@@ -59,7 +59,7 @@ app.get('/api/albums/:title', (req, res) => {
             } else {
                 res.json(album);
             }
-        }).catch(err => {
+        }).catch(() => {
             res.status(500).send('Database Error occured');
         });
 });
@@ -68,7 +68,7 @@ app.post('/api/add', (req, res) => {
     Album.updateOne({ title: req.body.title }, req.body, { upsert: true })
         .then(result => {
             res.json(result);
-        }).catch(err => {
+        }).catch(() => {
             res.status(500).send('Database Error occured');
         });
 });
@@ -82,7 +82,7 @@ app.get('/api/delete/:title', (req, res) => {
             } else {
                 res.status(404).send('404 - Not found');
             }
-        }).catch(err => {
+        }).catch(() => {
             res.status(500).send('Database Error occured');
         });
 });
